@@ -2,6 +2,19 @@ import pandas as pd
 import numpy as np
 import heapq
 import sys
+import pymongo
+
+
+
+def load_from_mongo():
+    client = pymongo.MongoClient("mongodb+srv://jeremy:root@cluster0.5ei45.mongodb.net/database?retryWrites=true&w=majority")
+    db = client.database
+    collection = db['steam_games2']
+    df= pd.DataFrame(list(collection.find()))
+    del df['_id']
+    return df
+
+
 
 # Translate games' name to index
 def name2idx(name):
@@ -42,8 +55,8 @@ def recommend(name):
 
 
 # 数据用csv代替，待后续线上DB部署后再做修改
-steam = pd.read_csv("D:\\Code\\\DS50\\datasets\\steam_games2.csv",encoding = "ISO-8859-1")
-
+# steam = pd.read_csv("D:\\Code\\\DS50\\datasets\\steam_games2.csv",encoding = "ISO-8859-1")
+steam = load_from_mongo()
 steam = steam.iloc[0:,1:8]
 steam = steam.drop(index = steam[(steam.types == "bundle")].index.tolist())
 steam = steam.drop(index = steam[(steam.types == "sub")].index.tolist())
@@ -58,11 +71,12 @@ for indexs in steam.index:
         str = str.split(',')
         tags[indexs] = str
 
-game_name = sys.argv[1]
+# game_name = sys.argv[1]
+game_name = "Counter-Strike: Source"
 print(recommend(game_name))
-output = str(recommend(game_name))
-sys.stdout.write(output)
-sys.stdout.flush()
+#output = str(recommend(game_name))
+#sys.stdout.write(output)
+#sys.stdout.flush()
 
 
 
