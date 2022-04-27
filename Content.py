@@ -2,6 +2,19 @@ import pandas as pd
 import numpy as np
 import heapq
 import sys
+import pymongo
+
+
+
+def load_from_mongo():
+    client = pymongo.MongoClient("mongodb+srv://jeremy:root@cluster0.5ei45.mongodb.net/database?retryWrites=true&w=majority")
+    db = client.database
+    collection = db['steam_games2']
+    df= pd.DataFrame(list(collection.find()))
+    del df['_id']
+    return df
+
+
 
 # Translate games' name to index
 def name2idx(name):
@@ -19,11 +32,11 @@ def get_score(name):
                         score[indexs] = score[indexs]+1
     return score
 
-def get_index(name):
+def get_index(name, num):
     score=get_score(name)
-    re1 = heapq.nlargest(5, score)
-    # print(re1)
-    re2=[0]*5
+    re1 = heapq.nlargest(num, score)
+    print(re1)
+    re2=[0]*num
     for i in range(len(re1)):    
         re2[i] = score.index(re1[i])
         if i>0 and re2[i] == re2[i-1]:
@@ -32,17 +45,18 @@ def get_index(name):
     # print(re2)  
     return re1,re2
 
-def recommend(name):
-    re1,re2=get_index(name)
-    print("Recommended games:\n")
+def recommend(name, num):
+    re1,re2=get_index(name,num)
+    print("Recommended games:")
     for i in range(len(re1)):
         name=steam.loc[re2[i],"name"]
         print("<{0}> with score:{1}\n".format(name,re1[i]))
 
 
 
-# 数据用csv代替，待后续线上DB部署后再做修改
-steam = pd.read_csv("D:\\Code\\\DS50\\datasets\\steam_games2.csv",encoding = "ISO-8859-1")
+
+# steam = pd.read_csv("D:\\Code\\\DS50\\datasets\\steam_games2.csv",encoding = "ISO-8859-1")
+steam = load_from_mongo()
 
 steam = steam.iloc[0:,1:8]
 steam = steam.drop(index = steam[(steam.types == "bundle")].index.tolist())
@@ -58,9 +72,13 @@ for indexs in steam.index:
         str = str.split(',')
         tags[indexs] = str
 
+# Input from back-end nodejs
 game_name = sys.argv[1]
-# print(recommend(game_name))
-output = str(recommend(game_name))
+num = int(sys.argv[2])
+
+#print(recommend(game_name, num))
+# Output to the backend
+output = str(recommend(game_name, num))
 sys.stdout.write(output)
 sys.stdout.flush()
 

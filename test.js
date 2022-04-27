@@ -11,22 +11,23 @@ const childPython = spawn('python', ['comm.py',JSON.stringify(obj)]);
 
 
 /**
- * 此处是与TD-IDF算法联调部分!!!!!!
- * itemid指游戏的app_id 当然此处也可以输入string类型的游戏名（由前端参数决定）
- * num指推荐几个和该游戏相似的游戏(按相似度排名)
+ * Connect nodejs with TD-IDF method
+ * @param itemid : id of game (app_id in DB) 
+ * @param num : the number of recommended games
  */
+
 var item_id = 10;
 var num = 2;
 const childPython = spawn('python', ['TD-IDF.py', item_id, num]);
-// 读取python返回内容 
+// reqd return value of python
 childPython.stdout.on('data', (data) => {
     console.log(data.toString());
 });
-// 返回错误 
+// return the error 
 childPython.stderr.on('data', (data) => {
     console.error(data.toString());
 });
-// 返回python结束码 
+// return the exit code of python
 childPython.on('close', (code) => {
     console.log('child process exited with code : ',code.toString());
 });
@@ -35,11 +36,14 @@ childPython.on('close', (code) => {
 
 
 /**
- * 与content_base算法联调部分!!!!!!
- * 传入参数只有游戏名
+ * Connect with Content based method
+ * @param game_name 
+ * @param num : the number of recommended games
  */
+
 var game_name = "Counter-Strike: Source"
-const child_2 = spawn('python', ['Content.py', game_name]);
+var num = 8
+const child_2 = spawn('python', ['Content.py', game_name, num]);
 
 child_2.stdout.on('data', (data) => {
     console.log(data.toString());
@@ -47,9 +51,16 @@ child_2.stdout.on('data', (data) => {
 
 
 
+/**
+ * Connect with Collaborative_filtering method
+ * There are currently no input parameters
+ */
 
+const child_3 = spawn('python', ['Collab_filtering.py']);
 
-
+child_3.stdout.on('data', (data) => {
+    console.log(data.toString());
+});
 
 
 

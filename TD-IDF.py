@@ -4,30 +4,17 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
-import pymysql
 import sys,json,io
+import pymongo
 
 
-
-# 目前仍采用本地mysql数据库 待线上mongodb部署好后在修改
-def load_from_mysql():
-    conn = pymysql.connect(
-        host="127.0.0.1",
-        port=3306,
-        user="root",
-        passwd="",
-        db="steamtest",
-        charset="utf8"
-    )
-    cursor = conn.cursor()
-    cursor.execute('set autocommit=1')
-    # sql = "delete from heart_2020_cleaned where BMI=94.85"
-    sql = "SELECT app_id,app_name,GROUP_CONCAT(review_text) as 'review_cum' FROM dataset GROUP BY app_id,app_name;"
-    cursor.execute(sql)
-    dataframe = pd.read_sql(sql, conn)
-    cursor.close()
-    conn.close()
-    return dataframe
+def load_from_mongo():
+    client = pymongo.MongoClient("mongodb+srv://jeremy:root@cluster0.5ei45.mongodb.net/database?retryWrites=true&w=majority")
+    db = client.database
+    collection = db['steam_reviews_cum']
+    df= pd.DataFrame(list(collection.find()))
+    del df['_id']
+    return df
 
 def item(id):  
   return reviews.loc[reviews['app_id'] == id]['app_name'].tolist()[0]  #itemid to name
@@ -48,14 +35,17 @@ def recommend(item_id, num):
 sys.stdout = io.TextIOWrapper(buffer=sys.stdout.buffer,encoding='utf8')
 
 
-reviews = load_from_mysql()
+reviews = load_from_mongo()
 
+# Input
 item_id_in = int(sys.argv[1])
 num_in = int(sys.argv[2])
+
 tf = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
-tfidf_matrix = tf.fit_transform(reviews['review_cum'])
+tfidf_matrix = tf.fit_transform(reviews['review_text'])
 cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix)
 
+# Output
 output = str(recommend(item_id_in,num_in))
 sys.stdout.write(output)
 sys.stdout.flush()
