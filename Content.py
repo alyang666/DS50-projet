@@ -59,7 +59,7 @@ for indexs in steam.index:
         tags[indexs] = str
 
 game_name = sys.argv[1]
-print(recommend(game_name))
+# print(recommend(game_name))
 output = str(recommend(game_name))
 sys.stdout.write(output)
 sys.stdout.flush()
