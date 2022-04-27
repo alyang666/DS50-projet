@@ -4,12 +4,10 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
-import pymysql
 import sys,json,io
 import pymongo
 
 
-# 目前仍采用本地mysql数据库 待线上mongodb部署好后在修改
 def load_from_mongo():
     client = pymongo.MongoClient("mongodb+srv://jeremy:root@cluster0.5ei45.mongodb.net/database?retryWrites=true&w=majority")
     db = client.database
@@ -39,12 +37,15 @@ sys.stdout = io.TextIOWrapper(buffer=sys.stdout.buffer,encoding='utf8')
 
 reviews = load_from_mongo()
 
+# Input
 item_id_in = int(sys.argv[1])
 num_in = int(sys.argv[2])
+
 tf = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
 tfidf_matrix = tf.fit_transform(reviews['review_text'])
 cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix)
 
+# Output
 output = str(recommend(item_id_in,num_in))
 sys.stdout.write(output)
 sys.stdout.flush()
