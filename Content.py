@@ -71,12 +71,20 @@ for indexs in steam.index:
         str = str.split(',')
         tags[indexs] = str
 
+<<<<<<< HEAD
 # game_name = sys.argv[1]
 game_name = "Counter-Strike: Source"
 print(recommend(game_name))
 #output = str(recommend(game_name))
 #sys.stdout.write(output)
 #sys.stdout.flush()
+=======
+game_name = sys.argv[1]
+# print(recommend(game_name))
+output = str(recommend(game_name))
+sys.stdout.write(output)
+sys.stdout.flush()
+>>>>>>> 176c826153d8a2cf1de627acf02680b29bd0b3a8
 
 
 
