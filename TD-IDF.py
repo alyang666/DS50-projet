@@ -36,7 +36,7 @@ sys.stdout = io.TextIOWrapper(buffer=sys.stdout.buffer,encoding='utf8')
 
 
 reviews = load_from_mongo()
-# reviews = pd.read_csv('D:\Code\DS50\datasets\steam_reviews_cum.csv')
+# reviews = pd.read_csv('https://raw.githubusercontent.com/alyang666/DS50/main/datastes/steam_reviews_cum.csv')
 
 # Input
 item_id_in = int(sys.argv[1])

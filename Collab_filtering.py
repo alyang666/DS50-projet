@@ -56,7 +56,7 @@ def recommendation(userid,prediction,num):
 
 
 steam_data = load_from_mongo()
-# steam_data = pd.read_csv('D:\Code\DS50\datasets\steam-200k.csv')
+# steam_data = pd.read_csv('https://raw.githubusercontent.com/alyang666/DS50/main/datastes/steam-200k.csv')
 
 steam_data.isnull().values.any()
 
