@@ -55,8 +55,8 @@ def recommend(name, num):
 
 
 
-# steam = pd.read_csv("D:\\Code\\\DS50\\datasets\\steam_games2.csv",encoding = "ISO-8859-1")
 steam = load_from_mongo()
+# steam = pd.read_csv("https://raw.githubusercontent.com/alyang666/DS50/main/datastes/steam_games2.csv",encoding = "ISO-8859-1")
 
 steam = steam.iloc[0:,1:8]
 steam = steam.drop(index = steam[(steam.types == "bundle")].index.tolist())
