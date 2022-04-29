@@ -17,12 +17,13 @@ const childPython = spawn('python', ['comm.py',JSON.stringify(obj)]);
  */
 
 var item_id = 10;
-var num = 2;
+var num = 5;
 const childPython = spawn('python', ['TD-IDF.py', item_id, num]);
-// reqd return value of python
+// read return value of python
 childPython.stdout.on('data', (data) => {
     console.log(data.toString());
 });
+
 // return the error 
 childPython.stderr.on('data', (data) => {
     console.error(data.toString());
@@ -41,10 +42,12 @@ childPython.on('close', (code) => {
  * @param num : the number of recommended games
  */
 
-var game_name = "Counter-Strike: Source"
-var num = 8
-const child_2 = spawn('python', ['Content.py', game_name, num]);
+var game_name = "Firewatch";
+var num = 8;
+const child_2 = spawn('python', ['content.py', game_name, num]);
 
+
+// read return value of python
 child_2.stdout.on('data', (data) => {
     console.log(data.toString());
 });
@@ -55,12 +58,12 @@ child_2.stdout.on('data', (data) => {
  * Connect with Collaborative_filtering method
  * There are currently no input parameters
  */
-
+/*
 const child_3 = spawn('python', ['Collab_filtering.py']);
 
 child_3.stdout.on('data', (data) => {
     console.log(data.toString());
 });
 
-
+*/
 
