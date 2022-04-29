@@ -21,6 +21,10 @@ def name2idx(name):
     idx = steam[steam["name"]== name].index.tolist()[0]
     return idx
 
+
+
+#Calculez la similarité d'autres jeux avec ce jeu.
+#Un point pour une étiquette identique
 def get_score(name):
     game_index=name2idx(name)
     score = [0]*40789
@@ -32,40 +36,47 @@ def get_score(name):
                         score[indexs] = score[indexs]+1
     return score
 
-def get_index(name, num):
+
+#Trouvez le nom du jeu et de l'indice les plus élevés.
+def get_index(name,num):
     score=get_score(name)
     re1 = heapq.nlargest(num, score)
-    print(re1)
+    #print(re1)
     re2=[0]*num
     for i in range(len(re1)):    
         re2[i] = score.index(re1[i])
         if i>0 and re2[i] == re2[i-1]:
             score[re2[i]]=0
             re2[i] = score.index(re1[i])
-    # print(re2)  
+    #print(re2)  
     return re1,re2
 
-def recommend(name, num):
+
+#Recommandation de jeux en fonction de l'indice
+def recommend(name,num):
     re1,re2=get_index(name,num)
-    print("Recommended games:")
+    #print("Recommended games:")
     for i in range(len(re1)):
         name=steam.loc[re2[i],"name"]
-        print("<{0}> with score:{1}\n".format(name,re1[i]))
+        id = name2idx(name)
+        #print("<{0}> with score:{1}\n".format(name,re1[i]))
+        print(id)
 
 
 
 
-steam = load_from_mongo()
-# steam = pd.read_csv("https://raw.githubusercontent.com/alyang666/DS50/main/datastes/steam_games2.csv",encoding = "ISO-8859-1")
+# steam = load_from_mongo()
+steam = pd.read_csv("https://raw.githubusercontent.com/alyang666/DS50/main/datastes/steam_games2.csv")
 
-steam = steam.iloc[0:,1:8]
-steam = steam.drop(index = steam[(steam.types == "bundle")].index.tolist())
-steam = steam.drop(index = steam[(steam.types == "sub")].index.tolist())
-tags=[None]*40788
+#steam = steam.iloc[0:,1:8]
+#steam = steam.drop(index = steam[(steam.types == "bundle")].index.tolist())
+#steam = steam.drop(index = steam[(steam.types == "sub")].index.tolist())
+tags=[None]*len(steam)
 
 for indexs in steam.index:
     str = steam.loc[indexs,"popular_tags"]
     if isinstance(str,float):
+        #print(str)
         steam = steam.drop(index = indexs)
         indexs = indexs -1
     else:
@@ -80,7 +91,8 @@ num = int(sys.argv[2])
 # Output to the backend
 output = str(recommend(game_name, num))
 sys.stdout.write(output)
-sys.stdout.flush()
+
+
 
 
 
