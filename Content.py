@@ -16,18 +16,18 @@ def load_from_mongo():
 
 
 
-# Translate games' name to index
-def name2idx(name):
-    idx = steam[steam["name"]== name].index.tolist()[0]
+# Translate game id to index
+def game_id2idx(game_id):
+    idx = steam[steam["app_id"]== game_id].index.tolist()[0]
     return idx
 
 
 
 #Calculez la similarité d'autres jeux avec ce jeu.
 #Un point pour une étiquette identique
-def get_score(name):
-    game_index=name2idx(name)
-    score = [0]*40789
+def get_score(game_id):
+    game_index=game_id2idx(game_id)
+    score = [0]*17282
     for i in range(len(tags[game_index])):
         for indexs in steam.index:
             if(indexs != game_index):
@@ -37,9 +37,10 @@ def get_score(name):
     return score
 
 
+
 #Trouvez le nom du jeu et de l'indice les plus élevés.
-def get_index(name,num):
-    score=get_score(name)
+def get_index(game_id,num):
+    score=get_score(game_id)
     re1 = heapq.nlargest(num, score)
     #print(re1)
     re2=[0]*num
@@ -52,15 +53,16 @@ def get_index(name,num):
     return re1,re2
 
 
-#Recommandation de jeux en fonction de l'indice
-def recommend(name,num):
-    re1,re2=get_index(name,num)
+
+def recommend(game_id,num):
+    re1,re2=get_index(game_id,num)
     #print("Recommended games:")
+    id_list = []
     for i in range(len(re1)):
-        name=steam.loc[re2[i],"name"]
-        id = name2idx(name)
+        game_id=steam.loc[re2[i],"app_id"]
+        id_list.append(int(game_id))
         #print("<{0}> with score:{1}\n".format(name,re1[i]))
-        print(id)
+    print(id_list)
 
 
 
@@ -84,14 +86,13 @@ for indexs in steam.index:
         tags[indexs] = str
 
 # Input from back-end nodejs
-game_name = sys.argv[1]
+game_name = int(sys.argv[1])
 num = int(sys.argv[2])
 
-#print(recommend(game_name, num))
+# print(recommend(game_name, num))
 # Output to the backend
-output = str(recommend(game_name, num))
+output = recommend(game_name, num)
 sys.stdout.write(output)
-
 
 
 
