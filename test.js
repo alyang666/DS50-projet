@@ -15,7 +15,7 @@ const childPython = spawn('python', ['comm.py',JSON.stringify(obj)]);
  * @param itemid : id of game (app_id in DB) 
  * @param num : the number of recommended games
  */
-/*
+
 
 var item_id = 10;
 var num = 5;
@@ -45,17 +45,17 @@ childPython.on('close', (code) => {
  * @param game_name 
  * @param num : the number of recommended games
  */
-
-var game_id = 12100;
+/*
+var game_id = 528550;
 var num = 8;
-const child_2 = spawn('python', ['content.py', game_id, num]);
+const child_2 = spawn('python', ['Testontent.py', game_id, num]);
 
 
 // read return value of python
 child_2.stdout.on('data', (data) => {
     console.log(data.toString());
 });
-
+*/
 
 
 /**
